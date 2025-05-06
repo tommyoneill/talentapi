@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'db' => [
+        'host' => 'localhost',
+        'database' => 'talentapi',
+        'username' => 'root',
+        'password' => 'your_password_here',
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+    ],
+    
+    'api' => [
+        'base_url' => 'http://localhost:8080',
+        'version' => 'v1',
+    ],
+    
+    'security' => [
+        'jwt_secret' => 'your_jwt_secret_here',
+        'jwt_expiration' => 3600, // 1 hour in seconds
+    ],
+    
+    'logging' => [
+        'level' => 'debug',
+        'path' => 'logs/app.log',
+    ]
+]; 
