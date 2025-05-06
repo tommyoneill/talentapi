@@ -1,0 +1,477 @@
+openapi: 3.0.0
+info:
+  title: Talent API
+  description: API for managing talent records
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: https://api.30apps.dev/
+    description: Live API test server
+
+paths:
+  /front-office/v1/talents/ids/{page}/{pageSize}:
+    get:
+      summary: Get talent IDs
+      description: Returns a paged list of talent IDs registered in the system
+      operationId: getTalentIds
+      tags:
+        - Talent
+      parameters:
+        - name: page
+          in: path
+          required: true
+          description: Page number for pagination
+          schema:
+            type: string
+        - name: pageSize
+          in: path
+          required: true
+          description: Number of items per page
+          schema:
+            type: string
+        - name: FrontOfficeTenantId
+          in: header
+          required: false
+          description: Front office ID that indicates the tenant for which the request is being made
+          schema:
+            type: string
+        - name: RequestId
+          in: header
+          required: false
+          description: Allows client-specified request correlation. Provided value must be a valid GUID
+          schema:
+            type: string
+            format: uuid
+        - name: Tenant
+          in: header
+          required: false
+          description: A short code that indicates the tenant for which the request is being made
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  format: int32
+                  description: Talent ID
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '406':
+          description: Unsupported format(s) indicated by Accept header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported format(s) indicated by the Content-Type header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: The request could not be completed because an error occurred in an upstream service
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /front-office/v1/talent/{talentId}:
+    get:
+      summary: Get talent details
+      description: Returns details about the specified talent record
+      operationId: getTalent
+      tags:
+        - Talent
+      parameters:
+        - name: talentId
+          in: path
+          required: true
+          description: A talentId to retrieve detail about the specified talent record
+          schema:
+            type: string
+        - name: includeResume
+          in: query
+          required: false
+          description: An indication of whether the resume should be retrieved as part of the request or not
+          schema:
+            type: boolean
+            default: false
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Talent'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Talent not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '406':
+          description: Unsupported format(s) indicated by Accept header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported format(s) indicated by the Content-Type header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: The request could not be completed because an error occurred in an upstream service
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        street1:
+          type: string
+          description: Street address, line 1
+        street2:
+          type: string
+          description: Street address, line 2
+        city:
+          type: string
+          description: City
+        state_Province:
+          type: string
+          description: Province, state, or region
+        postalCode:
+          type: string
+          description: ZIP/postal code
+        country:
+          type: string
+          description: Country
+        county:
+          type: string
+          description: County
+        geoCode:
+          type: string
+          description: Numerical coordinate based on ZIP code, city, and state
+        schoolDistrictCode:
+          type: string
+          description: School district code
+
+    Resume:
+      type: object
+      properties:
+        resumeId:
+          type: integer
+          format: int32
+          description: The identifier for the resume
+        resumeFilename:
+          type: string
+          description: The filename of the resume
+        resumeText:
+          type: string
+          description: The text content of the resume
+        resumeContents:
+          type: string
+          format: byte
+          description: Base64 encoded resume contents
+        createdDate:
+          type: string
+          format: date-time
+          description: The date the resume was created
+        lastUpdatedDate:
+          type: string
+          format: date-time
+          description: The date the resume was last updated
+
+    Talent:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The identifier for the talent
+        firstName:
+          type: string
+          description: The talent's first name
+        middleName:
+          type: string
+          description: The talent's middle name
+        lastName:
+          type: string
+          description: The talent's last name
+        homePhone:
+          type: string
+          description: The talent's home phone
+        workPhone:
+          type: string
+          description: The talent's work phone
+        mobilePhone:
+          type: string
+          description: The talent's mobile phone
+        pageNumber:
+          type: string
+          description: The talent's pager number
+        emailAddress:
+          type: string
+          description: The talent's email address
+        emailAddress2:
+          type: string
+          description: The talent's email address 2
+        taxIdNumber:
+          type: string
+          description: The talent's Taxpayer Identification Number
+        birthday:
+          type: string
+          format: date-time
+          description: The talent's birthday
+        gender:
+          type: string
+          description: The talent's gender
+        hireDate:
+          type: string
+          format: date-time
+          description: The talent's date of hire
+        residentAddress:
+          $ref: '#/components/schemas/Address'
+        mailingAddress:
+          $ref: '#/components/schemas/Address'
+        payrollAddress:
+          $ref: '#/components/schemas/Address'
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+        status:
+          type: string
+          description: The talent's status
+        filingStatus:
+          type: string
+          enum: [None, Single, Married, MarriedWithHigherRates]
+          description: Tax filing status
+        federalAllowances:
+          type: integer
+          format: int32
+          description: Federal withholding exemptions
+        stateAllowances:
+          type: integer
+          format: int32
+          description: State withholding exemptions
+        additionalFederalWithholding:
+          type: number
+          format: float
+          description: Additional federal withholding amount
+        i9ValidatedDate:
+          type: string
+          format: date-time
+          description: The date the talent's I-9 document was verified
+        frontOfficeId:
+          type: integer
+          format: int32
+          description: The talent's home office ID
+        latestActivityDate:
+          type: string
+          format: date-time
+          description: The date of the talent's latest activity
+        latestActivityName:
+          type: string
+          description: The talent's latest activity type
+        link:
+          type: string
+          description: URL to the talent profile
+        race:
+          type: string
+          description: The talent's race
+        disability:
+          type: string
+          description: The talent's disability status
+        veteranStatus:
+          type: string
+          description: The talent's veteran status
+        emailOptOut:
+          type: boolean
+          description: Whether the talent has opted out of emails
+        isArchived:
+          type: boolean
+          description: Whether the talent record is archived
+        placementStatus:
+          type: string
+          description: The talent's current placement status
+        representativeUser:
+          type: integer
+          format: int32
+          description: The ID of the representative
+        w2Consent:
+          type: boolean
+          description: Whether the talent has consented to electronic W-2
+        electronic1095CConsent:
+          type: boolean
+          description: Whether the talent has consented to electronic 1095-C
+        referredBy:
+          type: string
+          description: The ID of the user who referred the talent
+        availabilityDate:
+          type: string
+          format: date-time
+          description: The date when the talent is available for work
+        statusId:
+          type: integer
+          format: int32
+          description: The talent's status ID
+        officeName:
+          type: string
+          description: The name of the talent's home office
+        officeDivision:
+          type: string
+          description: The division of the talent's home office
+        enteredByUserId:
+          type: integer
+          format: int32
+          description: The ID of the user who entered the talent record
+        enteredByUser:
+          type: string
+          description: The email of the user who entered the talent record
+        representativeUserEmail:
+          type: string
+          description: The email of talent's representative user
+        createdDate:
+          type: string
+          format: date-time
+          description: The date the talent profile was created
+        lastUpdatedDate:
+          type: string
+          format: date-time
+          description: The date of the most recent update
+        latestWork:
+          type: string
+          description: The most recent employment
+        lastContacted:
+          type: string
+          format: date-time
+          description: The date the talent was last contacted
+        flag:
+          type: string
+          description: The talent profile flag status
+        origin:
+          type: string
+          description: The partner or vendor that originated the request
+        originRecordId:
+          type: string
+          description: The identifier for the talent in the originating system
+        electronic1099Consent:
+          type: boolean
+          description: Whether the talent has consented to electronic 1099
+        textConsent:
+          type: string
+          enum: [Opt Out, Opt In, No Response]
+          description: Text message consent status
+        talentResume:
+          $ref: '#/components/schemas/Resume'
+        rehireDate:
+          type: string
+          format: date-time
+          description: The talent's date of rehire
+        terminationDate:
+          type: string
+          format: date-time
+          description: The talent's date of termination
+        employmentTypeId:
+          type: integer
+          format: int32
+          description: The talent's employment type ID
+        employmentType:
+          type: string
+          description: The type of employment
+        employmentTypeName:
+          type: string
+          description: The talent's custom employment type value
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for API authentication
+
+security:
+  - bearerAuth: [] 

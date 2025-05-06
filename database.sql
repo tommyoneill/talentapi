@@ -1,0 +1,117 @@
+CREATE DATABASE IF NOT EXISTS talentapi;
+USE talentapi;
+
+CREATE TABLE IF NOT EXISTS talents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(255),
+    middle_name VARCHAR(255),
+    last_name VARCHAR(255),
+    home_phone VARCHAR(20),
+    work_phone VARCHAR(20),
+    mobile_phone VARCHAR(20),
+    page_number VARCHAR(20),
+    email_address VARCHAR(255),
+    email_address2 VARCHAR(255),
+    tax_id_number VARCHAR(20),
+    birthday DATETIME,
+    gender VARCHAR(50),
+    hire_date DATETIME,
+    status VARCHAR(100),
+    filing_status VARCHAR(50),
+    federal_allowances INT,
+    state_allowances INT,
+    additional_federal_withholding DECIMAL(10,2),
+    i9_validated_date DATETIME,
+    front_office_id INT,
+    latest_activity_date DATETIME,
+    latest_activity_name VARCHAR(255),
+    link VARCHAR(255),
+    race VARCHAR(100),
+    disability VARCHAR(100),
+    veteran_status VARCHAR(100),
+    email_opt_out BOOLEAN DEFAULT FALSE,
+    is_archived BOOLEAN DEFAULT FALSE,
+    placement_status VARCHAR(100),
+    representative_user INT,
+    w2_consent BOOLEAN DEFAULT FALSE,
+    electronic_1095c_consent BOOLEAN DEFAULT FALSE,
+    referred_by VARCHAR(255),
+    availability_date DATETIME,
+    status_id INT,
+    office_name VARCHAR(255),
+    office_division VARCHAR(255),
+    entered_by_user_id INT,
+    entered_by_user VARCHAR(255),
+    representative_user_email VARCHAR(255),
+    created_date DATETIME,
+    last_updated_date DATETIME,
+    latest_work VARCHAR(255),
+    last_contacted DATETIME,
+    flag VARCHAR(50),
+    origin VARCHAR(255),
+    origin_record_id VARCHAR(255),
+    electronic_1099_consent BOOLEAN DEFAULT FALSE,
+    text_consent VARCHAR(50),
+    rehire_date DATETIME,
+    termination_date DATETIME,
+    employment_type_id INT,
+    employment_type VARCHAR(50),
+    employment_type_name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS addresses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    talent_id INT,
+    type ENUM('resident', 'mailing', 'payroll'),
+    street1 VARCHAR(255),
+    street2 VARCHAR(255),
+    city VARCHAR(255),
+    state_province VARCHAR(255),
+    postal_code VARCHAR(20),
+    country VARCHAR(100),
+    county VARCHAR(255),
+    geo_code VARCHAR(255),
+    school_district_code VARCHAR(255),
+    FOREIGN KEY (talent_id) REFERENCES talents(id)
+);
+
+CREATE TABLE IF NOT EXISTS skills (
+    skill_id INT AUTO_INCREMENT PRIMARY KEY,
+    talent_id INT NOT NULL,
+    position_id INT,
+    description_id INT,
+    skill_position VARCHAR(255),
+    skill_description TEXT,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (talent_id) REFERENCES talents(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS work_history (
+    work_history_id INT AUTO_INCREMENT PRIMARY KEY,
+    talent_id INT NOT NULL,
+    company VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    from_date DATE NOT NULL,
+    to_date DATE,
+    city VARCHAR(255),
+    state VARCHAR(255),
+    country VARCHAR(100) DEFAULT 'USA',
+    duties TEXT,
+    reason_for_leaving TEXT,
+    notes TEXT,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (talent_id) REFERENCES talents(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS talent_resumes (
+    resume_id INT AUTO_INCREMENT PRIMARY KEY,
+    talent_id INT NOT NULL,
+    resume_filename VARCHAR(255) NOT NULL,
+    resume_text TEXT,
+    resume_contents LONGBLOB,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (talent_id) REFERENCES talents(id) ON DELETE CASCADE
+); 
